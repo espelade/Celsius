@@ -59,7 +59,7 @@
     } \
 }
 
-/*lastone*/
+/*lastone 高速化*/
 #define foreach_bitboard_lastone(bb,sq,XXX) \
 {\
 /**/ if (bb.p[0]|bb.p[1]|bb.p[2]) /**/ \
@@ -79,14 +79,14 @@
 					} \
 						while( _BitScanForward( &_index_, bb.p[0] ) ) \
 						{ \
-						bb.p[0] &= bb.p[0 - 1; \
+						bb.p[0] &= bb.p[0] - 1; \
 						sq = 26 - _index_; \
 						XXX; \
 						} \
   }\
 }
 
-/* bit取り出しの高速化　ビットボードのチェックなし*/
+/* lastone 高速化　ビットボードのチェックなし*/
 #define foreach_bitboard_lastone_no_check(bb,sq,XXX) \
 {\
 	    { \
@@ -105,7 +105,7 @@
 																				} \
 																										while( _BitScanForward( &_index_, bb.p[0] ) ) \
 																																{ \
-						bb.p[0] &= bb.p[0 - 1; \
+						bb.p[0] &= bb.p[0] - 1; \
 						sq = 26 - _index_; \
 						XXX; \
 																																} \

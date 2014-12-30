@@ -1,52 +1,65 @@
 #include "shogi.h"
 
 unsigned int * CONV
-b_gen_nocaptures( const tree_t * restrict ptree,
-		  unsigned int * restrict pmove )
+b_gen_nocaptures(const tree_t * restrict ptree,
+unsigned int * restrict pmove)
 {
-  bitboard_t bb_empty, bb_piece, bb_desti;
-  unsigned int utemp;
-  int to, from;
+	bitboard_t bb_empty, bb_piece, bb_desti;
+	unsigned int utemp;
+	int to, from;
 
-  BBOr( bb_empty, BB_BOCCUPY, BB_WOCCUPY );
-  BBNot( bb_empty, bb_empty );
+	BBOr(bb_empty, BB_BOCCUPY, BB_WOCCUPY);
+	BBNot(bb_empty, bb_empty);
 
-  bb_piece.p[1] = BB_BPAWN_ATK.p[1] & bb_empty.p[1];
-  bb_piece.p[2] = BB_BPAWN_ATK.p[2] & bb_empty.p[2];
-  while( bb_piece.p[1] | bb_piece.p[2] )
-    {
-      to            = last_one12( bb_piece.p[1], bb_piece.p[2] );
-      bb_piece.p[1] ^= abb_mask[to].p[1];
-      bb_piece.p[2] ^= abb_mask[to].p[2];
-      from          = to + 9;
-      *pmove++ = To2Move( to ) | From2Move( from ) | Piece2Move( pawn );
-    }
-  /*
-  while ( BBTest(bb) ) {
-  sq = FirstOne( bb );
-  Xor( sq, bb );
+	bb_piece.p[1] = BB_BPAWN_ATK.p[1] & bb_empty.p[1];
+	bb_piece.p[2] = BB_BPAWN_ATK.p[2] & bb_empty.p[2];
+	while (bb_piece.p[1] | bb_piece.p[2])
+	{
+		to = last_one12(bb_piece.p[1], bb_piece.p[2]);
+		bb_piece.p[1] ^= abb_mask[to].p[1];
+		bb_piece.p[2] ^= abb_mask[to].p[2];
+		from = to + 9;
+		*pmove++ = To2Move(to) | From2Move(from) | Piece2Move(pawn);
+	}
+	/*
+	while ( BBTest(bb) ) {
+	sq = FirstOne( bb );
+	Xor( sq, bb );
 
-  list0[nlist] = f_pawn + sq;
-  list2[n2]    = e_pawn + Inv(sq);
-  score += kkp[sq_bk0][sq_wk0][ kkp_pawn + sq ];
-  nlist += 1;
-  n2    += 1;
-  }
-  è¡ÇµÇƒOK
-  */
-  /*
-  foreach_bitboard_firstone(bb, sq,
-  {
-  list0[nlist] = f_lance + sq;
-  list2[n2] = e_lance + Inv(sq);
-  score += kkp[sq_bk0][sq_wk0][kkp_lance + sq];
-  nlist++;
-  n2++;
-  }
-  );
-  è¡ÇµÇƒOK
-  */
-  bb_piece = BB_BSILVER;
+	list0[nlist] = f_pawn + sq;
+	list2[n2]    = e_pawn + Inv(sq);
+	score += kkp[sq_bk0][sq_wk0][ kkp_pawn + sq ];
+	nlist += 1;
+	n2    += 1;
+	}
+	è¡ÇµÇƒOK
+	*/
+	/*
+	foreach_bitboard_firstone(bb, sq,
+	{
+	list0[nlist] = f_lance + sq;
+	list2[n2] = e_lance + Inv(sq);
+	score += kkp[sq_bk0][sq_wk0][kkp_lance + sq];
+	nlist++;
+	n2++;
+	}
+	);
+	è¡ÇµÇƒOK
+	*/
+	bb_piece = BB_BSILVER;
+	foreach_bitboard_lastone(bb_piece, to,
+	{
+		BBAnd(bb_desti, bb_empty, abb_b_silver_attacks[from]);
+		foreach_bitboard_lastone(bb_piece, to,
+		{
+			utemp = To2Move(to) | From2Move(from) | Piece2Move(silver);
+			if (from < A6 || to < A6) { *pmove++ = utemp | FLAG_PROMO; }
+			*pmove++ = utemp;
+		}
+		);
+	}
+	);
+	/*
   while( BBTest( bb_piece ) )
     {
       from   = LastOne( bb_piece );
@@ -62,8 +75,8 @@ b_gen_nocaptures( const tree_t * restrict ptree,
 	  if ( from < A6 || to < A6 ) { *pmove++ = utemp | FLAG_PROMO; }
 	  *pmove++ = utemp;
 	}
-    }
-
+    }*/
+	
   bb_piece = BB_BTGOLD;
   while( BBTest( bb_piece ) )
     {
