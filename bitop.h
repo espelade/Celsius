@@ -2,14 +2,11 @@
 #define BITOP_H
 
 #define BBToU(b)            ( (b).p[0] | (b).p[1] | (b).p[2] )
-/*
-#define BBTest(b)           ( (b).p[0] | (b).p[1] | (b).p[2] )
-*/
 #define BBToUShift(b)       ( (b).p[0]<<2 | (b).p[1]<<1 | (b).p[2])
 #define PopuCount(bb)       popu_count012( bb.p[0], bb.p[1], bb.p[2] )
 #define FirstOne(bb)        first_one012( bb.p[0], bb.p[1], bb.p[2] )
 
-/* 順序問わずbit取り出しの高速化*/
+/* 順序無くbit取り出しの高速化*/
 #define foreach_bitboard_one(bb,sq,XXX) \
 {\
 /**/ if (bb.p[0]|bb.p[1]|bb.p[2]) /**/ \
@@ -36,7 +33,7 @@
   }\
 }
 
-/* 順序問わずbit取り出しの高速化　ビットボードのチェックなし*/
+/* 順序無くbit取り出しの高速化　ビットボードのチェックなし*/
 #define foreach_bitboard_one_no_check(bb,sq,XXX) \
 {\
     { \
@@ -61,59 +58,58 @@
 																				} \
     } \
 }
-
-/*firstone 高速化*/
+/*firstone高速化*/
 #define foreach_bitboard_firstone(bb,sq,XXX) \
 {\
-/**/ if (bb.p[0]|bb.p[1]|bb.p[2]) /**/ \
-  {\
+	if (bb.p[0] | bb.p[1] | bb.p[2])  \
+	{\
 		unsigned long _index_; \
-				while ( _BitScanReverse( &_index_, bb.p[0] ) ) \
-						{ \
-			bb.p[0] ^= 1<< _index_; \
+		while (_BitScanReverse(&_index_, bb.p[0])) \
+		{ \
+			bb.p[0] ^= 1 << _index_; \
 			sq = 26 - _index_; \
 			XXX; \
-						} \
-								while ( _BitScanReverse( &_index_, bb.p[1] ) ) \
-										{ \
-			bb.p[1] ^= 1<< _index_; \
+		} \
+		while (_BitScanReverse(&_index_, bb.p[1])) \
+		{ \
+			bb.p[1] ^= 1 << _index_; \
 			sq = 53 - _index_; \
 			XXX; \
-										} \
-												while( _BitScanReverse( &_index_, bb.p[2] ) ) \
-														{ \
-			bb.p[2] ^= 1<< _index_; \
+		} \
+		while (_BitScanReverse(&_index_, bb.p[2])) \
+		{ \
+			bb.p[2] ^= 1 << _index_; \
 			sq = 80 - _index_; \
 			XXX; \
-														}	\
-  }\
-}
-/* firstone 高速化　ビットボードのチェックなし*/
-#define foreach_bitboard_firstone_no_check(bb,sq,XXX) \
-{\
-  {\
-		unsigned long _index_; \
-				while ( _BitScanReverse( &_index_, bb.p[0] ) ) \
-						{ \
-			bb.p[0] ^= 1<< _index_; \
-			sq = 26 - _index_; \
-			XXX; \
-						} \
-								while ( _BitScanReverse( &_index_, bb.p[1] ) ) \
-										{ \
-			bb.p[1] ^= 1<< _index_; \
-			sq = 53 - _index_; \
-			XXX; \
-										} \
-												while( _BitScanReverse( &_index_, bb.p[2] ) ) \
-														{ \
-			bb.p[2] ^= 1<< _index_; \
-			sq = 80 - _index_; \
-			XXX; \
-														}	\
-  }\
+		}	\
+	}\
 }
 
+/*firstone高速化　ビットボードチェックなし*/
+#define foreach_bitboard_firstone_no_check(bb,sq,XXX) \
+{\
+		{\
+		unsigned long _index_; \
+				while (_BitScanReverse(&_index_, bb.p[0])) \
+						{ \
+			bb.p[0] ^= 1 << _index_; \
+			sq = 26 - _index_; \
+			XXX; \
+						} \
+								while (_BitScanReverse(&_index_, bb.p[1])) \
+										{ \
+			bb.p[1] ^= 1 << _index_; \
+			sq = 53 - _index_; \
+			XXX; \
+										} \
+												while (_BitScanReverse(&_index_, bb.p[2])) \
+														{ \
+			bb.p[2] ^= 1 << _index_; \
+			sq = 80 - _index_; \
+			XXX; \
+														}	\
+		}\
+}
 
 /*lastone 高速化*/
 #define foreach_bitboard_lastone(bb,sq,XXX) \
@@ -167,7 +163,31 @@
 																																} \
 	    } \
 }
-
+/*#define foreach_bitboard_firstone(bb,sq,XXX) \
+{\
+if (bb.p[0] | bb.p[1] | bb.p[2])  \
+{\
+unsigned long _index_; \
+while (_BitScanReverse(&_index_, bb.p[0])) \
+{ \
+bb.p[0] ^= 1 << _index_; \
+sq = 26 - _index_; \
+XXX; \
+} \
+while (_BitScanReverse(&_index_, bb.p[1])) \
+{ \
+bb.p[1] ^= 1 << _index_; \
+sq = 53 - _index_; \
+XXX; \
+} \
+while (_BitScanReverse(&_index_, bb.p[2])) \
+{ \
+bb.p[2] ^= 1 << _index_; \
+sq = 80 - _index_; \
+XXX; \
+}	\
+}\
+}*/
 
 #define LastOne(bb)         last_one210( bb.p[2], bb.p[1], bb.p[0] )
 #define BBCmp(b1,b2)        ( (b1).p[0] != (b2).p[0]                    \

@@ -264,38 +264,25 @@ int list0[52], int list1[52], int * restrict pscore)
 	Xor(SQ_BKING, bb);
 	Xor(SQ_WKING, bb);
 	Xor(to, bb);
-	/*
-	while ( BBTest(bb) ) {
-	sq = FirstOne( bb );
-	Xor( sq, bb );
-
-	list0[nlist] = f_pawn + sq;
-	list2[n2]    = e_pawn + Inv(sq);
-	score += kkp[sq_bk0][sq_wk0][ kkp_pawn + sq ];
-	nlist += 1;
-	n2    += 1;
-	}
-	è¡ÇµÇƒOK
-	*/
-	/*
-	foreach_bitboard_firstone(bb, sq,
-	{
-		list0[nlist] = f_lance + sq;
-		list2[n2] = e_lance + Inv(sq);
-		score += kkp[sq_bk0][sq_wk0][kkp_lance + sq];
-		nlist++;
-		n2++;
-	}
-	);
-	è¡ÇµÇƒOK
-	*/
-	foreach_bitboard_one(bb, sq,
+	
+	foreach_bitboard_firstone_no_check(bb, sq,
 	{
 		pc = BOARD[sq];
 		list0[nlist] = aikpp[15 + pc] + sq;
 		list1[nlist++] = aikpp[15 - pc] + Inv(sq);
 	}
 	);
+	/*
+	while ( BBTest(bb) )
+	{
+	sq = FirstOne(bb);
+	Xor( sq, bb );
+
+	pc = BOARD[sq];
+	list0[nlist  ] = aikpp[15+pc] + sq;
+	list1[nlist++] = aikpp[15-pc] + Inv(sq);
+	}
+	*/
 
 	pc = BOARD[to];
 	list0[nlist] = aikpp[15 + pc] + to;
