@@ -289,7 +289,7 @@ int list0[52], int list1[52], int * restrict pscore)
 	);
 	è¡ÇµÇƒOK
 	*/
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		pc = BOARD[sq];
 		list0[nlist] = aikpp[15 + pc] + sq;
@@ -426,7 +426,7 @@ int list0[52], int list1[52])
 	n2 = 0;
 	//ï‡Å@çÇë¨âª
 	bb = BB_BPAWN;
-	foreach_bitboard_firstone_no_check(bb, sq,
+	foreach_bitboard_one_no_check(bb, sq,
 	{
 		list0[nlist] = f_pawn + sq;
 		list2[n2] = e_pawn + Inv(sq);
@@ -437,7 +437,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WPAWN;
-	foreach_bitboard_firstone_no_check(bb, sq,
+	foreach_bitboard_one_no_check(bb, sq,
 	{
 		list0[nlist] = e_pawn + sq;
 		list2[n2] = f_pawn + Inv(sq);
@@ -464,7 +464,7 @@ int list0[52], int list1[52])
 	n2 = 0;
 	//çÅé‘
 	bb = BB_BLANCE;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = f_lance + sq;
 		list2[n2] = e_lance + Inv(sq);
@@ -475,7 +475,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WLANCE;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = e_lance + sq;
 		list2[n2] = f_lance + Inv(sq);
@@ -490,7 +490,7 @@ int list0[52], int list1[52])
 	n2 = 0;
 	//åjîn
 	bb = BB_BKNIGHT;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = f_knight + sq;
 		list2[n2] = e_knight + Inv(sq);
@@ -501,7 +501,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WKNIGHT;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = e_knight + sq;
 		list2[n2] = f_knight + Inv(sq);
@@ -516,7 +516,7 @@ int list0[52], int list1[52])
 	n2 = 0;
 	//ã‚
 	bb = BB_BSILVER;
-	foreach_bitboard_firstone_no_check(bb, sq,
+	foreach_bitboard_one_no_check(bb, sq,
 	{
 		list0[nlist] = f_silver + sq;
 		list2[n2] = e_silver + Inv(sq);
@@ -527,7 +527,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WSILVER;
-	foreach_bitboard_firstone_no_check(bb, sq,
+	foreach_bitboard_one_no_check(bb, sq,
 	{
 		list0[nlist] = e_silver + sq;
 		list2[n2] = f_silver + Inv(sq);
@@ -540,7 +540,7 @@ int list0[52], int list1[52])
 
 	//ã‡ÅAê¨ã‡
 	bb = BB_BTGOLD;
-	foreach_bitboard_firstone_no_check(bb, sq,
+	foreach_bitboard_one_no_check(bb, sq,
 	{
 		list0[nlist] = f_gold + sq;
 		list2[n2] = e_gold + Inv(sq);
@@ -551,7 +551,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WTGOLD;
-	foreach_bitboard_firstone_no_check(bb, sq,
+	foreach_bitboard_one_no_check(bb, sq,
 	{
 		list0[nlist] = e_gold + sq;
 		list2[n2] = f_gold + Inv(sq);
@@ -566,7 +566,7 @@ int list0[52], int list1[52])
 	n2 = 0;
 	//äp
 	bb = BB_BBISHOP;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = f_bishop + sq;
 		list2[n2] = e_bishop + Inv(sq);
@@ -577,7 +577,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WBISHOP;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = e_bishop + sq;
 		list2[n2] = f_bishop + Inv(sq);
@@ -592,7 +592,7 @@ int list0[52], int list1[52])
 	n2 = 0;
 	//în
 	bb = BB_BHORSE;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = f_horse + sq;
 		list2[n2] = e_horse + Inv(sq);
@@ -603,7 +603,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WHORSE;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = e_horse + sq;
 		list2[n2] = f_horse + Inv(sq);
@@ -618,7 +618,7 @@ int list0[52], int list1[52])
 	n2 = 0;
 	//îÚ
 	bb = BB_BROOK;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = f_rook + sq;
 		list2[n2] = e_rook + Inv(sq);
@@ -629,7 +629,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WROOK;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = e_rook + sq;
 		list2[n2] = f_rook + Inv(sq);
@@ -644,7 +644,7 @@ int list0[52], int list1[52])
 	n2 = 0;
 	//ó¥
 	bb = BB_BDRAGON;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = f_dragon + sq;
 		list2[n2] = e_dragon + Inv(sq);
@@ -655,7 +655,7 @@ int list0[52], int list1[52])
 	);
 
 	bb = BB_WDRAGON;
-	foreach_bitboard_firstone(bb, sq,
+	foreach_bitboard_one(bb, sq,
 	{
 		list0[nlist] = e_dragon + sq;
 		list2[n2] = f_dragon + Inv(sq);

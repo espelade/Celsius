@@ -117,6 +117,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/D "NDEBUG" /D "_CONSOLE" /D"TLP" /D"MINIMUM" /D"TLP" /D"CSASHOGI" /D"INANIWA_SHIFT" /D"NO_LOGGING"  /D"HAVE_SSE2" /D"HAVE_SSE4" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
