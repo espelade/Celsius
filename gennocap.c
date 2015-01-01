@@ -24,6 +24,7 @@ unsigned int * restrict pmove)
 
 	//ã‚
 	bb_piece = BB_BSILVER;
+	
 	foreach_bitboard_lastone(bb_piece, from,
 	{
 		BBAnd(bb_desti, bb_empty, abb_b_silver_attacks[from]);
@@ -36,7 +37,7 @@ unsigned int * restrict pmove)
 		);
 	}
 	);
-	/*
+		/*
   while( BBTest( bb_piece ) )
     {
       from   = LastOne( bb_piece );
@@ -56,6 +57,7 @@ unsigned int * restrict pmove)
 	
 	//ã‡ÅAê¨ã‡
   bb_piece = BB_BTGOLD;
+  
   foreach_bitboard_lastone(bb_piece, from,
   {
 	  BBAnd(bb_desti, bb_empty, abb_b_gold_attacks[from]);
@@ -67,7 +69,7 @@ unsigned int * restrict pmove)
 	  );
   }
   );
-  /*
+	  /*
   while( BBTest( bb_piece ) )
     {
       from = LastOne( bb_piece );
@@ -86,13 +88,13 @@ unsigned int * restrict pmove)
   from = SQ_BKING;
   BBAnd( bb_desti, bb_empty, abb_king_attacks[from] );
   utemp = From2Move( from ) | Piece2Move( king ); 
-
+  
   foreach_bitboard_lastone(bb_desti, to,
   {
 	  *pmove++ = To2Move(to) | utemp;
   }
-  );
-  /*
+  ); 
+	  /*
   while ( BBTest( bb_desti ) )
     {
       to = LastOne( bb_desti );
@@ -174,19 +176,6 @@ unsigned int * restrict pmove)
 	}
     }*/
 
-  /*delete ok
-  foreach_bitboard_lastone(bb_piece, from,
-  {
-	  AttackDragon(bb_desti, from);
-	  BBAnd(bb_desti, bb_desti, bb_empty);
-	  utemp = From2Move(from) | Piece2Move(dragon);
-	  foreach_bitboard_lastone(bb_desti, to,
-	  {
-		  *pmove++ = To2Move(to) | utemp;
-	  }
-	  );
-  }
-  );*/
   bb_piece = BB_BDRAGON;
   foreach_bitboard_lastone(bb_piece, from,
   {

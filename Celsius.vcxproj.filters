@@ -152,9 +152,6 @@
     <ClInclude Include="dfpn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="evalate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="param.h">
       <Filter>Header Files</Filter>
     </ClInclude>

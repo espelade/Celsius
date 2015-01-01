@@ -91,30 +91,30 @@
 		{\
 		unsigned long _index_; \
 				while (_BitScanReverse(&_index_, bb.p[0])) \
+				{ \
+					bb.p[0] ^= 1 << _index_; \
+					sq = 26 - _index_; \
+					XXX; \
+				} \
+					while (_BitScanReverse(&_index_, bb.p[1])) \
+					{ \
+						bb.p[1] ^= 1 << _index_; \
+						sq = 53 - _index_; \
+						XXX; \
+					} \
+						while (_BitScanReverse(&_index_, bb.p[2])) \
 						{ \
-			bb.p[0] ^= 1 << _index_; \
-			sq = 26 - _index_; \
-			XXX; \
-						} \
-								while (_BitScanReverse(&_index_, bb.p[1])) \
-										{ \
-			bb.p[1] ^= 1 << _index_; \
-			sq = 53 - _index_; \
-			XXX; \
-										} \
-												while (_BitScanReverse(&_index_, bb.p[2])) \
-														{ \
-			bb.p[2] ^= 1 << _index_; \
-			sq = 80 - _index_; \
-			XXX; \
-														}	\
+							bb.p[2] ^= 1 << _index_; \
+							sq = 80 - _index_; \
+							XXX; \
+						}	\
 		}\
 }
 
 /*lastone 高速化*/
 #define foreach_bitboard_lastone(bb,sq,XXX) \
 {\
-/**/ if (bb.p[0]|bb.p[1]|bb.p[2]) /**/ \
+/**/ if (bb.p[2]|bb.p[1]|bb.p[0]) /**/ \
   {\
 		unsigned long _index_; \
 				while ( _BitScanForward( &_index_, bb.p[2] ) ) \
@@ -143,24 +143,24 @@
 {\
 	    { \
 		unsigned long _index_; \
-						while ( _BitScanForward( &_index_, bb.p[2] ) ) \
-										{ \
-				bb.p[2] &= bb.p[2] - 1 ; \
-				sq = 80 - _index_; \
-				XXX; \
-										} \
-															while ( _BitScanForward( &_index_, bb.p[1] ) ) \
-																				{ \
-					bb.p[1] &= bb.p[1] - 1; \
-					sq = 53 - _index_; \
+				while ( _BitScanForward( &_index_, bb.p[2] ) ) \
+				{ \
+					bb.p[2] &= bb.p[2] - 1 ; \
+					sq = 80 - _index_; \
 					XXX; \
-																				} \
-																										while( _BitScanForward( &_index_, bb.p[0] ) ) \
-																																{ \
-						bb.p[0] &= bb.p[0] - 1; \
-						sq = 26 - _index_; \
+				} \
+					while ( _BitScanForward( &_index_, bb.p[1] ) ) \
+					{ \
+						bb.p[1] &= bb.p[1] - 1; \
+						sq = 53 - _index_; \
 						XXX; \
-																																} \
+					} \
+						while( _BitScanForward( &_index_, bb.p[0] ) ) \
+						{ \
+							bb.p[0] &= bb.p[0] - 1; \
+							sq = 26 - _index_; \
+							XXX; \
+						} \
 	    } \
 }
 /*#define foreach_bitboard_firstone(bb,sq,XXX) \
