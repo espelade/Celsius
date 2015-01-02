@@ -35,18 +35,59 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
       add_behind_attacks( &bb_chk, idirec, sq_wk );
       BBAnd( bb_chk, bb_chk, abb_king_attacks[from] );
       BBAnd( bb_chk, bb_chk, bb_move_to );
-      
+
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(king)
+		  | Cap2Move(-BOARD[to]);
+	  }
+	  );
+	  /*
       while( BBTest( bb_chk ) )
 	{
 	  to = LastOne( bb_chk );
 	  Xor( to, bb_chk );
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(king)
 	    | Cap2Move(-BOARD[to]);
-	}
+	}*/
     }
   
-  
+  /*
+  foreach_bitboard_lastone(bb_target, ito,
+  {
+	BBAnd(bb_desti, bb_capture, abb_b_silver_attacks[ifrom]);
+	foreach_bitboard_lastone(bb_desti, ito,
+	{
+		utemp = (To2Move(ito) | From2Move(ifrom) | Cap2Move(-BOARD[ito])
+		| Piece2Move(silver));
+		if (ito < A6 || ifrom < A6) { *pmove++ = utemp | FLAG_PROMO; }
+		*pmove++ = utemp;
+	}
+	);
+  }
+  );*/
   bb_piece = BB_BDRAGON;
+  foreach_bitboard_lastone(bb_piece, from,
+  {
+	  BBOr(bb_chk, bb_rook_chk, abb_king_attacks[sq_wk]);
+	  idirec = (int)adirec[sq_wk][from];
+	  if (idirec && is_pinned_on_white_king(ptree, from, idirec))
+	  {
+		  add_behind_attacks(&bb_chk, idirec, sq_wk);
+	  }
+	  AttackDragon(bb_desti, from);
+	  BBAnd(bb_chk, bb_chk, bb_desti);
+	  BBAnd(bb_chk, bb_chk, bb_move_to);
+
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(dragon)
+		  | Cap2Move(-BOARD[to]);
+	  }
+	  );
+  }
+  );
+	  /*
   while( BBTest( bb_piece ) )
     {
       from = LastOne( bb_piece );
@@ -70,9 +111,31 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(dragon)
 	    | Cap2Move(-BOARD[to]);
 	}
-    }
+    }*/
 
   bb_piece = BB_BHORSE;
+  foreach_bitboard_lastone(bb_piece, from,
+  {
+	  BBOr(bb_chk, bb_bishop_chk, abb_king_attacks[sq_wk]);
+	  idirec = (int)adirec[sq_wk][from];
+	  if (idirec && is_pinned_on_white_king(ptree, from, idirec))
+	  {
+		  add_behind_attacks(&bb_chk, idirec, sq_wk);
+	  }
+
+	  AttackHorse(bb_desti, from);
+	  BBAnd(bb_chk, bb_chk, bb_desti);
+	  BBAnd(bb_chk, bb_chk, bb_move_to);
+
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(horse)
+		  | Cap2Move(-BOARD[to]);
+	  }
+	  );
+  }
+  );
+  /*
   while( BBTest( bb_piece ) )
     {
       from = LastOne( bb_piece );
@@ -96,7 +159,7 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(horse)
 	    | Cap2Move(-BOARD[to]);
 	}
-    }
+    }*/
 
   u1 = BB_BROOK.p[1];
   u2 = BB_BROOK.p[2];
@@ -156,14 +219,20 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	BBAnd( bb_chk, bb_chk, bb_desti );
 	BBAnd( bb_chk, bb_chk, bb_move_to );
       }
-
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(rook)
+		  | Cap2Move(-BOARD[to]) | FLAG_PROMO;
+	  }
+	  );
+	  /*
       while( BBTest( bb_chk ) )
 	{
 	  to = LastOne( bb_chk );
 	  Xor( to, bb_chk );
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(rook)
 	    | Cap2Move(-BOARD[to]) | FLAG_PROMO;
-	}
+	}*/
     }
 
   u1 = BB_BBISHOP.p[1];
@@ -224,18 +293,47 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	BBAnd( bb_chk, bb_chk, bb_desti );
 	BBAnd( bb_chk, bb_chk, bb_move_to );
       }
-
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(bishop)
+		  | Cap2Move(-BOARD[to]) | FLAG_PROMO;
+	  }
+	  );
+	  /*
       while( BBTest( bb_chk ) )
 	{
 	  to = LastOne( bb_chk );
 	  Xor( to, bb_chk );
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(bishop)
 	    | Cap2Move(-BOARD[to]) | FLAG_PROMO;
-	}
+	}*/
     }
 
 
   bb_piece = BB_BTGOLD;
+  foreach_bitboard_lastone(bb_piece, from,
+  {
+	  bb_chk = abb_w_gold_attacks[sq_wk];
+
+	  idirec = (int)adirec[sq_wk][from];
+	  if (idirec && is_pinned_on_white_king(ptree, from, idirec))
+	  {
+		  add_behind_attacks(&bb_chk, idirec, sq_wk);
+	  }
+
+	  BBAnd(bb_chk, bb_chk, abb_b_gold_attacks[from]);
+	  BBAnd(bb_chk, bb_chk, bb_move_to);
+
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = (To2Move(to) | From2Move(from)
+		  | Piece2Move(BOARD[from])
+		  | Cap2Move(-BOARD[to]));
+	  }
+	  );
+  }
+  );
+  /*
   while( BBTest( bb_piece ) )
     {
       from = LastOne( bb_piece );
@@ -260,7 +358,7 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 		       | Piece2Move(BOARD[from])
 		       | Cap2Move(-BOARD[to]) );
 	}
-    }
+    }*/
   
 
   u0 = BB_BSILVER.p[0];
@@ -320,6 +418,28 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
   
 
   bb_piece = BB_BSILVER;
+  foreach_bitboard_lastone(bb_piece, from,
+  {
+	  bb_chk = abb_w_silver_attacks[sq_wk];
+
+	  idirec = (int)adirec[sq_wk][from];
+	  if (idirec && is_pinned_on_white_king(ptree, from, idirec))
+	  {
+		  add_behind_attacks(&bb_chk, idirec, sq_wk);
+	  }
+
+	  BBAnd(bb_chk, bb_chk, abb_b_silver_attacks[from]);
+	  BBAnd(bb_chk, bb_chk, bb_move_to);
+
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(silver)
+		  | Cap2Move(-BOARD[to]);
+	  }
+	  );
+  }
+  );
+  /*
   while( BBTest( bb_piece ) )
     {
       from = LastOne( bb_piece );
@@ -343,7 +463,7 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(silver)
 	    | Cap2Move(-BOARD[to]);
 	}
-    }
+    }*/
   
 
   u0 = BB_BKNIGHT.p[0];
@@ -394,17 +514,50 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
       BBAnd( bb_chk, bb_chk, abb_b_knight_attacks[from] );
       BBAnd( bb_chk, bb_chk, bb_move_to );
 
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(knight)
+		  | Cap2Move(-BOARD[to]);
+	  }
+	  );
+	  /*
       while( BBTest( bb_chk ) )
 	{
 	  to = LastOne( bb_chk );
 	  Xor( to, bb_chk );
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(knight)
 	    | Cap2Move(-BOARD[to]);
-	}
+	}*/
     }
 
 
   bb_piece = BB_BLANCE;
+  foreach_bitboard_lastone(bb_piece, from,
+  {
+	  //bb_chk.p[0] = abb_w_gold_attacks[sq_wk].p[0];
+	  //bb_chk.p[1] = bb_chk.p[2] = 0;
+
+	  idirec = (int)adirec[sq_wk][from];
+	  if (idirec && idirec != direc_file && is_pinned_on_white_king(ptree, from, idirec))
+		  //if ( idirec && is_pinned_on_white_king( ptree, from, idirec ) )
+	  {
+		  add_behind_attacks(&bb_chk, idirec, sq_wk);
+		  //bb_chk.p[0] = abb_w_gold_attacks[sq_wk].p[0];
+	  }
+
+	  BBAnd(bb_chk, bb_chk, AttackFile(from));
+	  BBAnd(bb_chk, bb_chk, abb_minus_rays[from]);
+	  BBAnd(bb_chk, bb_chk, bb_move_to);
+
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(lance)
+		  | Cap2Move(-BOARD[to]) | FLAG_PROMO;
+	  }
+	  );
+  }
+  );
+  /*
   while( BBTest( bb_piece ) )
     {
       from = LastOne( bb_piece );
@@ -432,7 +585,7 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(lance)
 	    | Cap2Move(-BOARD[to]) | FLAG_PROMO;
 	}
-    }
+    }*/
   
 
   u1 = BB_BLANCE.p[1];
@@ -456,13 +609,20 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
       BBAnd( bb_chk, bb_chk, bb_move_to );
       bb_chk.p[0] = bb_chk.p[0] & 0x1ffU;
 
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(lance)
+		  | Cap2Move(-BOARD[to]);
+	  }
+	  );
+	  /*
       while( BBTest( bb_chk ) )
 	{
 	  to = LastOne( bb_chk );
 	  Xor( to, bb_chk );
 	  *pmove++ = To2Move(to) | From2Move(from) | Piece2Move(lance)
 	    | Cap2Move(-BOARD[to]);
-	}
+	}*/
     }
 
   BBIni( bb_chk );
@@ -472,6 +632,25 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
   BBAnd( bb_chk, bb_chk, BB_BPAWN_ATK );
 
   BBAnd( bb_piece, bb_diag1_chk, BB_BPAWN );
+
+  foreach_bitboard_lastone(bb_piece, from,
+  {
+	  to = from - nfile;
+	  if (BOARD[to] > 0) { continue; }
+
+	  bb_desti = AttackDiag1(from);
+	  if (BBContract(bb_desti, BB_B_BH))
+	  {
+		  BBNotAnd(bb_chk, bb_chk, abb_mask[to]);
+
+		  *pmove = To2Move(to) | From2Move(from)
+			  | Piece2Move(pawn) | Cap2Move(-BOARD[to]);
+		  if (from < A5) { *pmove |= FLAG_PROMO; }
+		  pmove += 1;
+	  }
+  }
+  );
+  /*
   while ( BBTest(bb_piece) )
     {
       from = LastOne( bb_piece );
@@ -490,9 +669,30 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	  if ( from < A5 ) { *pmove |= FLAG_PROMO; }
 	  pmove += 1;
 	}
-    }
+    }*/
 
   BBAnd( bb_piece, bb_diag2_chk, BB_BPAWN );
+  foreach_bitboard_lastone(bb_piece, from,
+  {
+	  from = LastOne(bb_piece);
+	  Xor(from, bb_piece);
+
+	  to = from - nfile;
+	  if (BOARD[to] > 0) { continue; }
+
+	  bb_desti = AttackDiag2(from);
+	  if (BBContract(bb_desti, BB_B_BH))
+	  {
+		  BBNotAnd(bb_chk, bb_chk, abb_mask[to]);
+
+		  *pmove = To2Move(to) | From2Move(from)
+			  | Piece2Move(pawn) | Cap2Move(-BOARD[to]);
+		  if (from < A5) { *pmove |= FLAG_PROMO; }
+		  pmove += 1;
+	  }
+  }
+  );
+  /*
   while ( BBTest(bb_piece) )
     {
       from = LastOne( bb_piece );
@@ -511,9 +711,27 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	  if ( from < A5 ) { *pmove |= FLAG_PROMO; }
 	  pmove += 1;
 	}
-    }
+    }*/
 
   BBAnd( bb_piece, bb_rank_chk, BB_BPAWN );
+  foreach_bitboard_lastone(bb_piece, from,
+  {
+	  to = from - nfile;
+	  if (BOARD[to] > 0) { continue; }
+
+	  bb_desti = AttackRank(from);
+	  if (BBContract(bb_desti, BB_B_RD))
+	  {
+		  BBNotAnd(bb_chk, bb_chk, abb_mask[to]);
+
+		  *pmove = To2Move(to) | From2Move(from)
+			  | Piece2Move(pawn) | Cap2Move(-BOARD[to]);
+		  if (from < A5) { *pmove |= FLAG_PROMO; }
+		  pmove += 1;
+	  }
+  }
+  );
+  /*
   while ( BBTest(bb_piece) )
     {
       from = LastOne( bb_piece );
@@ -532,8 +750,17 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	  if ( from < A5 ) { *pmove |= FLAG_PROMO; }
 	  pmove += 1;
 	}
-    }
-
+    }*/
+  foreach_bitboard_lastone(bb_chk, to,
+  {
+	  from = to + nfile;
+	  *pmove = To2Move(to) | From2Move(from)
+		  | Piece2Move(pawn) | Cap2Move(-BOARD[to]);
+	  if (from < A5) { *pmove |= FLAG_PROMO; }
+	  pmove += 1;
+  }
+  );
+  /*
   while ( BBTest(bb_chk) )
     {
       to = LastOne( bb_chk );
@@ -544,30 +771,42 @@ b_gen_checks( tree_t * restrict __ptree__, unsigned int * restrict pmove )
 	| Piece2Move(pawn) | Cap2Move(-BOARD[to]);
       if ( from < A5 ) { *pmove |= FLAG_PROMO; }
       pmove += 1;
-    }
+    }*/
 
 
   if ( IsHandGold(HAND_B) )
     {
       BBAnd( bb_chk, bb_drop_to, abb_w_gold_attacks[sq_wk] );
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | Drop2Move(gold);
+	  }
+	  );
+	  /*
       while( BBTest( bb_chk ) )
 	{
 	  to = LastOne( bb_chk );
 	  Xor( to, bb_chk );
 	  *pmove++ = To2Move(to) | Drop2Move(gold);
-	}
+	}*/
     }
   
 
   if ( IsHandSilver(HAND_B) )
     {
       BBAnd( bb_chk, bb_drop_to, abb_w_silver_attacks[sq_wk] );
+	  foreach_bitboard_lastone(bb_chk, to,
+	  {
+		  *pmove++ = To2Move(to) | Drop2Move(silver);
+	  }
+	  );
+	  /*
       while( BBTest( bb_chk ) )
 	{
 	  to = LastOne( bb_chk );
 	  Xor( to, bb_chk );
 	  *pmove++ = To2Move(to) | Drop2Move(silver);
-	}
+	}*/
     }
   
 

@@ -108,7 +108,6 @@ evaluate(tree_t * restrict ptree, int ply, int turn)
 	}
 
 	int list0[52], list1[52];
-	int nlist,/* score,*/ sq_bk, sq_wk, k0, k1, l0, l1, i, j, sum;
 
 	list0[0] = f_hand_pawn + I2HandPawn(HAND_B);
 	list0[1] = e_hand_pawn + I2HandPawn(HAND_W);
@@ -148,6 +147,7 @@ evaluate(tree_t * restrict ptree, int ply, int turn)
 
 		return score / FV_SCALE;
 	}
+	int nlist,/* score,*/ sq_bk, sq_wk, k0, k1, l0, l1, i, j, sum;
 
 	nlist = make_list(ptree, &score, list0, list1);
 	sq_bk = SQ_BKING;
@@ -265,7 +265,7 @@ int list0[52], int list1[52], int * restrict pscore)
 	Xor(SQ_WKING, bb);
 	Xor(to, bb);
 	
-	foreach_bitboard_firstone_no_check(bb, sq,
+	foreach_bitboard_one_no_check(bb, sq,
 	{
 		pc = BOARD[sq];
 		list0[nlist] = aikpp[15 + pc] + sq;
