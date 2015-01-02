@@ -42,7 +42,7 @@ b_gen_drop( tree_t * restrict __ptree__, unsigned int * restrict pmove )
       ais_pawn[6] = ibb_pawn_cmp & ( mask_file1 >> 6 );
       ais_pawn[7] = ibb_pawn_cmp & ( mask_file1 >> 7 );
       ais_pawn[8] = ibb_pawn_cmp & ( mask_file1 >> 8 );
-	  
+ 
       while ( BBToU( bb_target ) )
 	{
 	  ito   = LastOne( bb_target );
