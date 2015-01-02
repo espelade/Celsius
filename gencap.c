@@ -584,11 +584,8 @@ w_gen_captures( const tree_t * restrict ptree, unsigned int * restrict pmove )
 	  }
 	  foreach_bitboard_firstone(bb_desti, ito,
 	  {
-		  ito = FirstOne(bb_desti);
-		  Xor(ito, bb_desti);
-
 		  utemp = (To2Move(ito) | From2Move(ifrom)
-			  | Cap2Move(BOARD[ito]) | Piece2Move(rook));
+		  | Cap2Move(BOARD[ito]) | Piece2Move(rook));
 		  if (ito > I4 || ifrom > I4) { utemp |= FLAG_PROMO; }
 		  *pmove++ = utemp;
 	  }
