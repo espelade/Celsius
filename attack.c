@@ -123,6 +123,13 @@ is_mate_b_pawn_drop( tree_t * restrict ptree, int sq_drop )
   BBOr( bb, BB_WHORSE, BB_WDRAGON );
   BBAndOr( bb_sum, bb, abb_king_attacks[sq_drop] );
 
+  foreach_bitboard_firstone(bb_sum, ifrom,
+  {
+	  if (IsDiscoverWK(ifrom, sq_drop)) { continue; }
+	  return 0;
+  }
+  );
+  /*
   while ( BBTest( bb_sum ) )
     {
       ifrom  = FirstOne( bb_sum );
@@ -130,7 +137,7 @@ is_mate_b_pawn_drop( tree_t * restrict ptree, int sq_drop )
 
       if ( IsDiscoverWK( ifrom, sq_drop ) ) { continue; }
       return 0;
-    }
+    }*/
 
   iwk  = SQ_WKING;
   iret = 1;
@@ -140,6 +147,7 @@ is_mate_b_pawn_drop( tree_t * restrict ptree, int sq_drop )
   XorDiag1( sq_drop, OCCUPIED_DIAG1 );
   
   BBNotAnd( bb_move, abb_king_attacks[iwk], BB_WOCCUPY );
+
   while ( BBTest( bb_move ) )
     {
       ito = FirstOne( bb_move );
@@ -180,6 +188,13 @@ is_mate_w_pawn_drop( tree_t * restrict ptree, int sq_drop )
   BBOr( bb, BB_BHORSE, BB_BDRAGON );
   BBAndOr( bb_sum, bb, abb_king_attacks[sq_drop] );
 
+  foreach_bitboard_firstone(bb_sum, ifrom,
+  {
+	  if (IsDiscoverBK(ifrom, sq_drop)) { continue; }
+	  return 0;
+  }
+  );
+  /*
   while ( BBTest( bb_sum ) )
     {
       ifrom  = FirstOne( bb_sum );
@@ -187,7 +202,7 @@ is_mate_w_pawn_drop( tree_t * restrict ptree, int sq_drop )
 
       if ( IsDiscoverBK( ifrom, sq_drop ) ) { continue; }
       return 0;
-    }
+    }*/
 
   ibk  = SQ_BKING;
   iret = 1;

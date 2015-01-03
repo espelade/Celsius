@@ -30,18 +30,29 @@ is_b_mate_in_1ply( tree_t * restrict ptree )
 
     BBAnd( bb, abb_w_gold_attacks[SQ_WKING], abb_b_gold_attacks[SQ_WKING] );
     BBAnd( bb, bb, bb_drop );
+	foreach_bitboard_firstone(bb, to,
+	{
+		if (!is_white_attacked(ptree, to)) { continue; }
+
+		BBOr(bb_attacks, abb_file_attacks[to][0], abb_rank_attacks[to][0]);
+		if (can_w_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_w_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(rook);
+	}
+	);
+	/*
     while( BBTest(bb) )
       {
-	to = FirstOne( bb );
-	Xor( to, bb );
+		to = FirstOne( bb );
+		Xor( to, bb );
 
-	if ( ! is_white_attacked( ptree, to ) ) { continue; }
+		if ( ! is_white_attacked( ptree, to ) ) { continue; }
 	
-	BBOr( bb_attacks, abb_file_attacks[to][0], abb_rank_attacks[to][0] );
-	if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_w_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(rook);
-      }
+		BBOr( bb_attacks, abb_file_attacks[to][0], abb_rank_attacks[to][0] );
+		if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_w_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(rook);
+      }*/
 
   } else if ( IsHandLance(HAND_B) && SQ_WKING <= I2 ) {
 
@@ -62,19 +73,31 @@ is_b_mate_in_1ply( tree_t * restrict ptree )
     BBAnd( bb, abb_w_silver_attacks[SQ_WKING],
 	   abb_b_silver_attacks[SQ_WKING] );
     BBAnd( bb, bb, bb_drop );
+	foreach_bitboard_firstone(bb, to,
+	{
+		if (!is_white_attacked(ptree, to)) { continue; }
+
+		BBOr(bb_attacks, abb_bishop_attacks_rr45[to][0],
+			abb_bishop_attacks_rl45[to][0]);
+		if (can_w_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_w_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(bishop);
+	}
+	);
+	/*
     while( BBTest(bb) )
       {
-	to = FirstOne( bb );
-	Xor( to, bb );
+		to = FirstOne( bb );
+		Xor( to, bb );
 
-	if ( ! is_white_attacked( ptree, to ) ) { continue; }
+		if ( ! is_white_attacked( ptree, to ) ) { continue; }
 	
-	BBOr( bb_attacks, abb_bishop_attacks_rr45[to][0],
-	      abb_bishop_attacks_rl45[to][0] );
-	if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_w_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(bishop);
-      }
+		BBOr( bb_attacks, abb_bishop_attacks_rr45[to][0],
+		      abb_bishop_attacks_rl45[to][0] );
+		if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_w_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(bishop);
+      }*/
   }
 
   if ( IsHandGold(HAND_B) ) {
@@ -87,19 +110,29 @@ is_b_mate_in_1ply( tree_t * restrict ptree )
 	BBAnd( bb, bb, abb_w_gold_attacks[SQ_WKING] );
       }
     else { BBAnd( bb, bb_drop, abb_w_gold_attacks[SQ_WKING] ); }
+	foreach_bitboard_firstone(bb, to,
+	{
+		if (!is_white_attacked(ptree, to)) { continue; }
 
+		bb_attacks = abb_b_gold_attacks[to];
+		if (can_w_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_w_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(gold);
+	}
+	);
+	/*
     while ( BBTest(bb) )
       {
-	to = FirstOne( bb );
-	Xor( to, bb );
+		to = FirstOne( bb );
+		Xor( to, bb );
 	
-	if ( ! is_white_attacked( ptree, to ) ) { continue; }
+		if ( ! is_white_attacked( ptree, to ) ) { continue; }
 	
-	bb_attacks = abb_b_gold_attacks[to];
-	if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_w_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(gold);
-      }
+		bb_attacks = abb_b_gold_attacks[to];
+		if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_w_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(gold);
+      }*/
   }
   
   if ( IsHandSilver(HAND_B) ) {
@@ -120,34 +153,54 @@ is_b_mate_in_1ply( tree_t * restrict ptree )
 	}
     }
     
+	foreach_bitboard_firstone(bb, to,
+	{
+		if (!is_white_attacked(ptree, to)) { continue; }
+
+		bb_attacks = abb_b_silver_attacks[to];
+		if (can_w_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_w_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(silver);
+	}
+	);
+	/*
     while ( BBTest(bb) )
       {
-	to = FirstOne( bb );
-	Xor( to, bb );
+		to = FirstOne( bb );
+		Xor( to, bb );
 	
-	if ( ! is_white_attacked( ptree, to ) ) { continue; }
+		if ( ! is_white_attacked( ptree, to ) ) { continue; }
 	
-	bb_attacks = abb_b_silver_attacks[to];
-	if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_w_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(silver);
-      }
+		bb_attacks = abb_b_silver_attacks[to];
+		if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_w_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(silver);
+      }*/
   }
  b_silver_drop_end:
  
   if ( IsHandKnight(HAND_B) ) {
     
     BBAnd( bb, bb_drop, abb_w_knight_attacks[SQ_WKING] );
+	foreach_bitboard_firstone(bb, to,
+	{
+		BBIni(bb_attacks);
+		if (can_w_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_w_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(knight);
+	}
+	);
+	/*
     while ( BBTest(bb) )
       {
-	to = FirstOne( bb );
-	Xor( to, bb );
+		to = FirstOne( bb );
+		Xor( to, bb );
 	
-	BBIni( bb_attacks );
-	if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_w_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(knight);
-      }
+		BBIni( bb_attacks );
+		if ( can_w_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_w_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(knight);
+      }*/
   }
 
   /*  Moves  */
@@ -997,18 +1050,29 @@ is_w_mate_in_1ply( tree_t * restrict ptree )
     BBAnd( bb, abb_w_gold_attacks[SQ_BKING],
 	   abb_b_gold_attacks[SQ_BKING] );
     BBAnd( bb, bb, bb_drop );
+	foreach_bitboard_lastone(bb, to,
+	{
+		if (!is_black_attacked(ptree, to)) { continue; }
+
+		BBOr(bb_attacks, abb_file_attacks[to][0], abb_rank_attacks[to][0]);
+		if (can_b_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_b_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(rook);
+	}
+	);
+	/*
     while( BBTest(bb) )
       {
-	to = LastOne( bb );
-	Xor( to, bb );
+		to = LastOne( bb );
+		Xor( to, bb );
 
-	if ( ! is_black_attacked( ptree, to ) ) { continue; }
+		if ( ! is_black_attacked( ptree, to ) ) { continue; }
 	
-	BBOr( bb_attacks, abb_file_attacks[to][0], abb_rank_attacks[to][0] );
-	if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_b_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(rook);
-      }
+		BBOr( bb_attacks, abb_file_attacks[to][0], abb_rank_attacks[to][0] );
+		if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_b_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(rook);
+      }*/
 
   } else if ( IsHandLance(HAND_W) && SQ_BKING >= A8 ) {
 
@@ -1029,19 +1093,31 @@ is_w_mate_in_1ply( tree_t * restrict ptree )
     BBAnd( bb, abb_w_silver_attacks[SQ_BKING],
 	   abb_b_silver_attacks[SQ_BKING] );
     BBAnd( bb, bb, bb_drop );
+	foreach_bitboard_lastone(bb, to,
+	{
+		if (!is_black_attacked(ptree, to)) { continue; }
+
+		BBOr(bb_attacks, abb_bishop_attacks_rr45[to][0],
+			abb_bishop_attacks_rl45[to][0]);
+		if (can_b_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_b_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(bishop);
+	}
+	);
+	/*
     while( BBTest(bb) )
       {
-	to = LastOne( bb );
-	Xor( to, bb );
+		to = LastOne( bb );
+		Xor( to, bb );
 
-	if ( ! is_black_attacked( ptree, to ) ) { continue; }
+		if ( ! is_black_attacked( ptree, to ) ) { continue; }
 	
-	BBOr( bb_attacks, abb_bishop_attacks_rr45[to][0],
-	      abb_bishop_attacks_rl45[to][0] );
-	if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_b_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(bishop);
-      }
+		BBOr( bb_attacks, abb_bishop_attacks_rr45[to][0],
+		      abb_bishop_attacks_rl45[to][0] );
+		if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_b_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(bishop);
+      }*/
   }
 
   if ( IsHandGold(HAND_W) ) {
@@ -1055,18 +1131,29 @@ is_w_mate_in_1ply( tree_t * restrict ptree )
       }
     else { BBAnd( bb, bb_drop, abb_b_gold_attacks[SQ_BKING] ); }
 
+	foreach_bitboard_lastone(bb, to,
+	{
+		if (!is_black_attacked(ptree, to)) { continue; }
+
+		bb_attacks = abb_w_gold_attacks[to];
+		if (can_b_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_b_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(gold);
+	}
+	);
+	/*
     while ( BBTest(bb) )
       {
-	to = LastOne( bb );
-	Xor( to, bb );
+		to = LastOne( bb );
+		Xor( to, bb );
 	
-	if ( ! is_black_attacked( ptree, to ) ) { continue; }
-	
-	bb_attacks = abb_w_gold_attacks[to];
-	if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_b_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(gold);
-      }
+		if ( ! is_black_attacked( ptree, to ) ) { continue; }
+		
+		bb_attacks = abb_w_gold_attacks[to];
+		if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_b_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(gold);
+      }*/
   }
   
   if ( IsHandSilver(HAND_W) ) {
@@ -1087,34 +1174,54 @@ is_w_mate_in_1ply( tree_t * restrict ptree )
 	}
     }
     
+	foreach_bitboard_lastone(bb, to,
+	{
+		if (!is_black_attacked(ptree, to)) { continue; }
+
+		bb_attacks = abb_w_silver_attacks[to];
+		if (can_b_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_b_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(silver);
+	}
+	);
+	/*
     while ( BBTest(bb) )
       {
-	to = LastOne( bb );
-	Xor( to, bb );
+		to = LastOne( bb );
+		Xor( to, bb );
+		
+		if ( ! is_black_attacked( ptree, to ) ) { continue; }
 	
-	if ( ! is_black_attacked( ptree, to ) ) { continue; }
-	
-	bb_attacks = abb_w_silver_attacks[to];
-	if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_b_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(silver);
-      }
+		bb_attacks = abb_w_silver_attacks[to];
+		if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_b_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(silver);
+      }*/
   }
  w_silver_drop_end:
   
   if ( IsHandKnight(HAND_W) ) {
     
     BBAnd( bb, bb_drop, abb_b_knight_attacks[SQ_BKING] );
+	foreach_bitboard_lastone(bb, to,
+	{
+		BBIni(bb_attacks);
+		if (can_b_king_escape(ptree, to, &bb_attacks)) { continue; }
+		if (can_b_piece_capture(ptree, to))            { continue; }
+		return To2Move(to) | Drop2Move(knight);
+	}
+	);
+	/*
     while ( BBTest(bb) )
       {
-	to = LastOne( bb );
-	Xor( to, bb );
+		to = LastOne( bb );
+		Xor( to, bb );
 	
-	BBIni( bb_attacks );
-	if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
-	if ( can_b_piece_capture( ptree, to ) )            { continue; }
-	return To2Move(to) | Drop2Move(knight);
-      }
+		BBIni( bb_attacks );
+		if ( can_b_king_escape( ptree, to, &bb_attacks ) ) { continue; }
+		if ( can_b_piece_capture( ptree, to ) )            { continue; }
+		return To2Move(to) | Drop2Move(knight);
+      }*/
   }
 
   /* Moves */
@@ -2018,6 +2125,13 @@ can_b_piece_capture( const tree_t * restrict ptree, int to )
   BBAndOr( bb, BB_BLANCE, abb_plus_rays[to] );
   BBAndOr( bb_sum, bb, AttackFile( to ) );
 
+  foreach_bitboard_lastone(bb_sum, from,
+  {
+	  if (IsDiscoverBK(from, to)) { continue; }
+	  return 1;
+  }
+  );
+  /*
   while ( BBTest( bb_sum ) )
     {
       from  = LastOne( bb_sum );
@@ -2025,7 +2139,7 @@ can_b_piece_capture( const tree_t * restrict ptree, int to )
 
       if ( IsDiscoverBK( from, to ) ) { continue; }
       return 1;
-    }
+    }*/
 
   return 0;
 }

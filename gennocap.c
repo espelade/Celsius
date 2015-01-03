@@ -25,7 +25,7 @@ unsigned int * restrict pmove)
 	//ã‚
 	bb_piece = BB_BSILVER;
 	
-	foreach_bitboard_lastone(bb_piece, from,
+	foreach_bitboard_lastone_no_check(bb_piece, from,
 	{
 		BBAnd(bb_desti, bb_empty, abb_b_silver_attacks[from]);
 		foreach_bitboard_lastone(bb_desti, to,
@@ -58,7 +58,7 @@ unsigned int * restrict pmove)
 	//ã‡ÅAê¨ã‡
   bb_piece = BB_BTGOLD;
   
-  foreach_bitboard_lastone(bb_piece, from,
+  foreach_bitboard_lastone_no_check(bb_piece, from,
   {
 	  BBAnd(bb_desti, bb_empty, abb_b_gold_attacks[from]);
 	  utemp = From2Move(from) | Piece2Move(BOARD[from]);
@@ -90,7 +90,7 @@ unsigned int * restrict pmove)
   BBAnd( bb_desti, bb_empty, abb_king_attacks[from] );
   utemp = From2Move( from ) | Piece2Move( king ); 
   
-  foreach_bitboard_lastone(bb_desti, to,
+  foreach_bitboard_lastone_no_check(bb_desti, to,
   {
 	  *pmove++ = To2Move(to) | utemp;
   }
@@ -305,7 +305,7 @@ w_gen_nocaptures( const tree_t * restrict ptree,
     }
 
   bb_piece = BB_WSILVER;
-  foreach_bitboard_firstone(bb_piece, from,
+  foreach_bitboard_firstone_no_check(bb_piece, from,
   {
 	  BBAnd(bb_desti, bb_empty, abb_w_silver_attacks[from]);
 
@@ -338,7 +338,7 @@ w_gen_nocaptures( const tree_t * restrict ptree,
 
   bb_piece = BB_WTGOLD;
 
-  foreach_bitboard_firstone(bb_piece, from,
+  foreach_bitboard_firstone_no_check(bb_piece, from,
   {
 	  BBAnd(bb_desti, bb_empty, abb_w_gold_attacks[from]);
 	  utemp = From2Move(from) | Piece2Move(-BOARD[from]);
@@ -370,7 +370,7 @@ w_gen_nocaptures( const tree_t * restrict ptree,
   BBAnd( bb_desti, bb_empty, abb_king_attacks[from] );
   utemp = From2Move( from ) | Piece2Move( king ); 
 
-  foreach_bitboard_firstone(bb_desti, to,
+  foreach_bitboard_firstone_no_check(bb_desti, to,
   {
 	  *pmove++ = To2Move(to) | utemp;
   }

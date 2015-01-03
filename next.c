@@ -31,21 +31,8 @@ gen_next_move( tree_t * restrict ptree, int ply, int turn )
 	  {
 	    move = pmove[i];
 	    sortv = swap( ptree, move, -1, INT_MAX, turn );
-		/*
-	    if ( sortv > value_best )
-	      {
-		move_second  = move_best;
-		value_second = value_best;
-		value_best = sortv;
-		move_best  = move;
-	      }
-	    else if ( sortv > value_second )
-	      {
-		move_second  = move;
-		value_second = sortv;
-	      }
-		  */
-		//‚‘¬‰»
+		
+		//value_second‚ð’´‚¦‚È‚¯‚ê‚Îvalue_best‚ð’´‚¦‚é‚±‚Æ‚Í–³‚¢‚Ì‚Åæ‚Évalue_second‚Æ”äŠr‚·‚×‚«
 		if ( sortv > value_second )
 	      {
 		move_second  = move;
@@ -58,6 +45,20 @@ gen_next_move( tree_t * restrict ptree, int ply, int turn )
 				move_best = move;
 			}
 	      }
+		/*
+		if ( sortv > value_best )
+		{
+		move_second  = move_best;
+		value_second = value_best;
+		value_best = sortv;
+		move_best  = move;
+		}
+		else if ( sortv > value_second )
+		{
+		move_second  = move;
+		value_second = sortv;
+		}
+		*/
 	    
 	    if ( move == move_hash ) { sortv = INT_MIN; }
 	    else if ( UToFromToPromo(move) == killer1 )

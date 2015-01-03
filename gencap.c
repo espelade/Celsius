@@ -38,7 +38,7 @@ b_gen_captures( const tree_t * restrict ptree, unsigned int * restrict pmove )
 
   //ã‚
   bb_piece = BB_BSILVER;
-  foreach_bitboard_lastone(bb_piece, ifrom,
+  foreach_bitboard_lastone_no_check(bb_piece, ifrom,
   {
 	  BBAnd(bb_desti, bb_capture, abb_b_silver_attacks[ifrom]);
 	  foreach_bitboard_lastone(bb_desti, ito,
@@ -71,7 +71,7 @@ b_gen_captures( const tree_t * restrict ptree, unsigned int * restrict pmove )
   }*/
   //ã‡ÅAê¨ã‡
   bb_piece = BB_BTGOLD;
-  foreach_bitboard_lastone(bb_piece, ifrom,
+  foreach_bitboard_lastone_no_check(bb_piece, ifrom,
   {
 	  BBAnd(bb_desti, bb_capture, abb_b_gold_attacks[ifrom]);
 	  foreach_bitboard_lastone(bb_desti, ito,
@@ -433,7 +433,7 @@ w_gen_captures( const tree_t * restrict ptree, unsigned int * restrict pmove )
     }*/
   //ã‚
   bb_piece = BB_WSILVER;
-  foreach_bitboard_firstone(bb_piece, ifrom,
+  foreach_bitboard_firstone_no_check(bb_piece, ifrom,
   {
 	  BBAnd(bb_desti, bb_capture, abb_w_silver_attacks[ifrom]);
 	  foreach_bitboard_firstone(bb_desti, ito,
@@ -466,7 +466,7 @@ w_gen_captures( const tree_t * restrict ptree, unsigned int * restrict pmove )
     }*/
   //ã‡ÅAê¨ã‡
   bb_piece = BB_WTGOLD;
-  foreach_bitboard_firstone(bb_piece, ifrom,
+  foreach_bitboard_firstone_no_check(bb_piece, ifrom,
   {
 	  BBAnd(bb_desti, bb_capture, abb_w_gold_attacks[ifrom]);
 	  foreach_bitboard_firstone(bb_desti, ito,
