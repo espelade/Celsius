@@ -11,7 +11,7 @@ static int CONV doacapt(const tree_t * restrict ptree, int pc, int turn,
 	const int list1[52], int nlist);
 static int CONV doapc(const tree_t * restrict ptree, int pc, int sq,
 	const int list0[52], const int list1[52], int nlist);
-__inline static int CONV ehash_probe(uint64_t current_key, unsigned int hand_b,
+Inline static int CONV ehash_probe(uint64_t current_key, unsigned int hand_b,
 	int * restrict pscore);
 static void CONV ehash_store(uint64_t key, unsigned int hand_b, int score);
 static int CONV calc_difference(const tree_t * restrict ptree, int ply,
@@ -110,6 +110,107 @@ evaluate(tree_t * restrict ptree, int ply, int turn)
 	int list0[52], list1[52];
 	int nlist,/* score,*/ sq_bk, sq_wk, k0, k1, l0, l1, i, j, sum;
 
+	/*int nhp = 0;*///全持ち駒の合計
+	//しまったkkpハンドじゃいかんやん
+	/*i = I2HandPawn(HAND_B);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_pawn + j;
+		list1[nhp + j] = kkp_hand_pawn + j;
+	}
+	nhp += i;
+
+	i = I2HandLance(HAND_B);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_lance + j;
+		list1[nhp + j] = kkp_hand_lance + j;
+	}
+	nhp += i;
+
+	i = I2HandKnight(HAND_B);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_knight + j;
+		list1[nhp + j] = kkp_hand_knight + j;
+	}
+	nhp += i;
+
+	i = I2HandSilver(HAND_B);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_silver + j;
+		list1[nhp + j] = kkp_hand_silver + j;
+	}
+	nhp += i;
+
+	i = I2HandGold(HAND_B);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_gold + j;
+		list1[nhp + j] = kkp_hand_gold + j;
+	}
+	nhp += i;
+
+	i = I2HandBishop(HAND_B);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_bishop + j;
+		list1[nhp + j] = kkp_hand_bishop + j;
+	}
+	nhp += i;
+
+	i = I2HandRook(HAND_B);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_rook + j;
+		list1[nhp + j] = kkp_hand_rook + j;
+	}
+	nhp += i;
+
+	i = I2HandPawn(HAND_W);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_pawn + j;
+		list1[nhp + j] = kkp_hand_pawn + j;
+	}
+	nhp += i;
+
+	i = I2HandLance(HAND_W);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_lance + j;
+		list1[nhp + j] = kkp_hand_lance + j;
+	}
+	nhp += i;
+
+	i = I2HandKnight(HAND_W);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_knight + j;
+		list1[nhp + j] = kkp_hand_knight + j;
+	}
+	nhp += i;
+
+	i = I2HandSilver(HAND_W);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_silver + j;
+		list1[nhp + j] = kkp_hand_silver + j;
+	}
+	nhp += i;
+
+	i = I2HandGold(HAND_W);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_gold + j;
+		list1[nhp + j] = kkp_hand_gold + j;
+	}
+	nhp += i;
+
+	i = I2HandBishop(HAND_W);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_bishop + j;
+		list1[nhp + j] = kkp_hand_bishop + j;
+	}
+	nhp += i;
+
+	i = I2HandRook(HAND_W);
+	for (j = 0; j < i; j++){
+		list0[nhp + j] = kkp_hand_rook + j;
+		list1[nhp + j] = kkp_hand_rook + j;
+	}
+	nhp += i;*/
+
+	
 	list0[0] = f_hand_pawn + I2HandPawn(HAND_B);
 	list0[1] = e_hand_pawn + I2HandPawn(HAND_W);
 	list0[2] = f_hand_lance + I2HandLance(HAND_B);
@@ -139,7 +240,7 @@ evaluate(tree_t * restrict ptree, int ply, int turn)
 	list1[11] = e_hand_bishop + I2HandBishop(HAND_B);
 	list1[12] = f_hand_rook + I2HandRook(HAND_W);
 	list1[13] = e_hand_rook + I2HandRook(HAND_B);
-
+	
 	if (calc_difference(ptree, ply, turn, list0, list1, &score))
 	{
 		ehash_store(HASH_KEY, HAND_B, score);
@@ -197,7 +298,7 @@ evaluate(tree_t * restrict ptree, int ply, int turn)
 void CONV ehash_clear(void) { memset(ehash_tbl, 0, sizeof(ehash_tbl)); }
 
 
-__inline static int CONV ehash_probe(uint64_t current_key, unsigned int hand_b,
+Inline static int CONV ehash_probe(uint64_t current_key, unsigned int hand_b,
 	int * restrict pscore)
 {
 	uint64_t hash_word, hash_key;
@@ -394,6 +495,8 @@ int list0[52], int list1[52])
 	sq_bk1 = Inv(SQ_WKING);
 	sq_wk1 = Inv(SQ_BKING);
 
+	
+	
 	score += kkp[sq_bk0][sq_wk0][kkp_hand_pawn + I2HandPawn(HAND_B)];
 	score += kkp[sq_bk0][sq_wk0][kkp_hand_lance + I2HandLance(HAND_B)];
 	score += kkp[sq_bk0][sq_wk0][kkp_hand_knight + I2HandKnight(HAND_B)];
@@ -409,6 +512,7 @@ int list0[52], int list1[52])
 	score -= kkp[sq_bk1][sq_wk1][kkp_hand_gold + I2HandGold(HAND_W)];
 	score -= kkp[sq_bk1][sq_wk1][kkp_hand_bishop + I2HandBishop(HAND_W)];
 	score -= kkp[sq_bk1][sq_wk1][kkp_hand_rook + I2HandRook(HAND_W)];
+	
 
 	n2 = 0;
 	//歩　高速化

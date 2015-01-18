@@ -21,7 +21,7 @@ popu_count012(unsigned int u0, unsigned int u1, unsigned int u2)
 
 #if defined(_MSC_VER)
 
-__inline int CONV
+Inline int CONV
 first_one012(unsigned int u0, unsigned int u1, unsigned int u2)
 {
 	unsigned long index;
@@ -32,7 +32,7 @@ first_one012(unsigned int u0, unsigned int u1, unsigned int u2)
 	return 80 - index;
 }
 
-__inline int CONV
+Inline int CONV
 last_one210(unsigned int u2, unsigned int u1, unsigned int u0)
 {
 	unsigned long index;
@@ -43,7 +43,7 @@ last_one210(unsigned int u2, unsigned int u1, unsigned int u0)
 	return 26 - index;
 }
 
-__inline int CONV
+Inline int CONV
 first_one01(unsigned int u0, unsigned int u1)
 {
 	unsigned long index;
@@ -53,7 +53,7 @@ first_one01(unsigned int u0, unsigned int u1)
 	return 53 - index;
 }
 
-__inline int CONV
+Inline int CONV
 first_one12(unsigned int u1, unsigned int u2)
 {
 	unsigned long index;
@@ -63,7 +63,7 @@ first_one12(unsigned int u1, unsigned int u2)
 	return 80 - index;
 }
 
-__inline int CONV
+Inline int CONV
 last_one01(unsigned int u0, unsigned int u1)
 {
 	unsigned long index;
@@ -73,7 +73,7 @@ last_one01(unsigned int u0, unsigned int u1)
 	return 26 - index;
 }
 
-__inline int CONV
+Inline int CONV
 last_one12(unsigned int u1, unsigned u2)
 {
 	unsigned long index;
@@ -83,7 +83,7 @@ last_one12(unsigned int u1, unsigned u2)
 	return 53 - index;
 }
 
-__inline int CONV
+Inline int CONV
 first_one1(unsigned int u1)
 {
 	unsigned long index;
@@ -92,7 +92,7 @@ first_one1(unsigned int u1)
 	return 53 - index;
 }
 
-__inline int CONV
+Inline int CONV
 first_one2(unsigned int u2)
 {
 	unsigned long index;
@@ -101,7 +101,7 @@ first_one2(unsigned int u2)
 	return 80 - index;
 }
 
-__inline int CONV
+Inline int CONV
 last_one0(unsigned int u0)
 {
 	unsigned long index;
@@ -110,7 +110,7 @@ last_one0(unsigned int u0)
 	return 26 - index;
 }
 
-__inline int CONV
+Inline int CONV
 last_one1(unsigned int u1)
 {
 	unsigned long index;

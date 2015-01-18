@@ -32,13 +32,14 @@ int CONV load_fv( void )
   pf = file_open( str_fv, "rb" );
   if ( pf == NULL ) { return -2; }
 
+  //KPP
   size = nsquare * pos_n;
   if ( fread( pc_on_sq, sizeof(short), size, pf ) != size )
     {
       str_error = str_io_error;
       return -2;
     }
-
+  //KKP
   size = nsquare * nsquare * kkp_end;
   if ( fread( kkp, sizeof(short), size, pf ) != size )
     {

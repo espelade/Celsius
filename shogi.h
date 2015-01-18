@@ -25,6 +25,8 @@ typedef int sckt_t;
 
 #endif
 
+
+
 /* Microsoft C/C++ on x86 and x86-64 */
 #if defined(_MSC_VER)
 

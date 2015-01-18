@@ -13,7 +13,7 @@
 
 #if ! defined(MINIMUM)
 
-#  define SEARCH_DEPTH      2
+#  define SEARCH_DEPTH      1
 #  define NUM_RESULT        8
 #  define MAX_RECORD_LENGTH 1024
 #  define DOT_INTERVAL      10
@@ -49,7 +49,7 @@ typedef struct {
   /* work area */
   unsigned int record_moves[ MAX_RECORD_LENGTH ];
   unsigned int amove_legal[ MAX_LEGAL_MOVES ];
-  unsigned int record_length, pos_buf;
+  unsigned int record_length, pos_buf, winner;
   unsigned short buf[ SIZE_PV_BUFFER ];
   int root_turn;
 
@@ -140,10 +140,10 @@ learn( tree_t * restrict ptree, int is_ini, int nsteps, unsigned int max_games,
   for ( niterations = 1; niterations <= max_iterations; niterations++ )
     {
       Out( "\n  Iteration %03d\n", niterations );
-
+	  //record.csa開く
       iret = record_open( &record, "records.csa", mode_read, NULL, NULL );
       if ( iret < 0 ) { break; }
-  
+	  //一時ファイルtmp.bin作成
       pf_tmp = file_open( "tmp.bin", "wb" );
       if ( pf_tmp == NULL )
 	{
@@ -151,7 +151,7 @@ learn( tree_t * restrict ptree, int is_ini, int nsteps, unsigned int max_games,
 	  iret = -2;
 	  break;
 	}
-
+	  //learn_parce1
       iret = learn_parse1( ptree, pbook_entry, pf_tmp, &record, max_games,
 			   &target_out_window, &obj_norm, nworker1 );
 
@@ -168,7 +168,7 @@ learn( tree_t * restrict ptree, int is_ini, int nsteps, unsigned int max_games,
 	  record_close( &record );
 	  break;
 	}
-
+	  //tmp.bin開く
       pf_tmp = file_open( "tmp.bin", "rb" );
       if ( pf_tmp == NULL )
 	{
@@ -176,7 +176,7 @@ learn( tree_t * restrict ptree, int is_ini, int nsteps, unsigned int max_games,
 	  iret = -2;
 	  break;
 	}
-
+	  //learn_parse2
       iret = learn_parse2( ptree, pf_tmp, nsteps, target_out_window, obj_norm,
 			   nworker2 );
       if ( iret < 0 )
@@ -347,37 +347,60 @@ static void *parse1_worker( void *arg )
   ptree                = pdata->ptree;
 
   for ( i = 0; i < NUM_RESULT; i++ ) { pdata->result[i] = 0; }
+
   pdata->num_moves_counted = 0;
   pdata->num_moves         = 0;
   pdata->num_nodes         = 0;
   pdata->max_pos_buf       = 0;
   pdata->result_norm       = 0;
   pdata->record_length     = 0;
+  pdata->winner = 0;
   pdata->illegal_moves     = 0;
   pdata->info              = 0;
   pdata->target            = 0.0;
   pdata->target_out_window = 0.0;
-
-  for ( ;; ) {
-    /* make pv */
+  
+  
+  for ( ;; ) 
+  {
+	/* make pv */
     pdata->pos_buf = 2U;
+	pdata->winner = pdata->record_length % 2;//先手勝ちなら0、後手勝ちなら1、のはず
+	//棋譜の長さまで順に棋譜の指し手について何かの計算をしている
     for ( imove = 0; imove < (int)pdata->record_length; imove++ )
       {
-	record_move                    = pdata->record_moves[imove];
+		//この辺りで負けた方の指し手を適当に読み飛ばすようにしたい
+		
+		//ここでrecord_movesを更新している
+		record_move                    = pdata->record_moves[imove];
+		
+		pdata->buf[ pdata->pos_buf++ ] = Move2S(record_move);
 
-	pdata->buf[ pdata->pos_buf++ ] = Move2S(record_move);
+		//この二行を読み飛ばせばいいのかねぇ
+		if (pdata->winner == 0 ){
+			//先手勝利時、先手の手のみ計算
+			if ( (imove % 2) == 0){
+				if ( record_move & MOVE_VOID ) { record_move &= ~MOVE_VOID; }
+				else                           { make_pv( pdata, record_move ); }
+			}
+			else{}
+		}
+		else{
+			if ( (imove % 2) == 1){
+				//後手勝利時、後手の手のみ計算
+				if (record_move & MOVE_VOID) { record_move &= ~MOVE_VOID; }
+				else                         { make_pv(pdata, record_move); }
+			}
+			else{}
+		}
+		pdata->buf[ pdata->pos_buf++ ] = 0;
 
-	if ( record_move & MOVE_VOID ) { record_move &= ~MOVE_VOID; }
-	else                           { make_pv( pdata, record_move ); }
-
-	pdata->buf[ pdata->pos_buf++ ] = 0;
-
-	MakeMove( pdata->root_turn, record_move, 1 );
-	pdata->root_turn     = Flip( pdata->root_turn );
-	ptree->move_last[1]  = ptree->move_last[0];
-	ptree->nsuc_check[0] = 0;
-	ptree->nsuc_check[1]
-	  = (unsigned char)( InCheck( pdata->root_turn ) ? 1U : 0 );
+		MakeMove( pdata->root_turn, record_move, 1 );//メイクムーブしておるな
+		pdata->root_turn     = Flip( pdata->root_turn );
+		ptree->move_last[1]  = ptree->move_last[0];
+		ptree->nsuc_check[0] = 0;
+		ptree->nsuc_check[1]
+		  = (unsigned char)( InCheck( pdata->root_turn ) ? 1U : 0 );
       }
 
 #if defined(TLP)
@@ -387,19 +410,19 @@ static void *parse1_worker( void *arg )
     /* save pv */
     if ( pdata->record_length )
       {
-	if ( pdata->pos_buf > pdata->max_pos_buf )
-	  {
-	    pdata->max_pos_buf = pdata->pos_buf;
-	  }
-	pdata->buf[0] = (unsigned short)( pdata->pos_buf / 0x10000U );
-	pdata->buf[1] = (unsigned short)( pdata->pos_buf % 0x10000U );
+		if ( pdata->pos_buf > pdata->max_pos_buf )
+		 {
+		   pdata->max_pos_buf = pdata->pos_buf;
+		  }
+		pdata->buf[0] = (unsigned short)( pdata->pos_buf / 0x10000U );
+		pdata->buf[1] = (unsigned short)( pdata->pos_buf % 0x10000U );
 
-	if ( fwrite( pdata->buf, sizeof(unsigned short), pdata->pos_buf,
-		     pdata->pf_tmp ) != pdata->pos_buf )
-	  {
-	    str_error = str_io_error;
-	    iret      = -2;
-	  }
+		if ( fwrite( pdata->buf, sizeof(unsigned short), pdata->pos_buf,
+			     pdata->pf_tmp ) != pdata->pos_buf )
+		  {
+		    str_error = str_io_error;
+		   iret      = -2;
+		  }
       }
 
     /* read next game */
@@ -428,6 +451,9 @@ static void *parse1_worker( void *arg )
 }
 
 
+//見えた～！！ここで学習の処理しておる！！
+/*ここで勝者の手のみmake_pv及びsave_pvするようにすればよかろう！*/
+/*とすれば勝者を判定せねばならんな。それはつまり最後の手を指したものだの。*/
 static void
 make_pv( parse1_data_t *pdata, unsigned int record_move )
 {
@@ -461,6 +487,7 @@ make_pv( parse1_data_t *pdata, unsigned int record_move )
       ptree->hist_good[i]  /= 256U;
       ptree->hist_tried[i] /= 256U;
     }
+  //評価
   evaluate( ptree, 1, pdata->root_turn );
 
   pmove = GenCaptures     ( pdata->root_turn, pdata->amove_legal );
@@ -524,31 +551,31 @@ make_pv( parse1_data_t *pdata, unsigned int record_move )
     
     if ( imove )
       {
-	func_value        = func( value - record_value );
-	pdata->target    += func_value;
-	pdata->num_moves += 1U;
-	if ( alpha < value && value < beta )
-	  {
-	    nc += 1;
-	  }
-	else { pdata->target_out_window += func_value; }
-	if ( value >= record_value ) { nth += 1; }
-      }
-    else if ( alpha < value && value < beta )
-      {
-	nth          += 1;
-	record_value  = value;
-      }
-    else { break; } /* record move failed high or low. */
+		func_value        = func( value - record_value );
+		pdata->target    += func_value;
+		pdata->num_moves += 1U;
+		if ( alpha < value && value < beta )
+		  {
+		    nc += 1;
+		  }
+		else { pdata->target_out_window += func_value; }
+		if ( value >= record_value ) { nth += 1; }
+	   }
+	else if ( alpha < value && value < beta )
+	   {
+		nth          += 1;
+		record_value  = value;
+	   }
+	else { break; } /* record move failed high or low. */
 
     if ( alpha < value && value < beta )
       {
-	pdata->buf[ pos_buf++ ] = Move2S(move);
-	for ( ply = 2; ply <= ptree->pv[1].length; ply++ )
-	  {
-	    pdata->buf[ pos_buf++ ] = Move2S(ptree->pv[1].a[ply]);
-	  }
-	pdata->buf[ pos_buf - 1 ] |= 0x8000U;
+		pdata->buf[ pos_buf++ ] = Move2S(move);
+		for ( ply = 2; ply <= ptree->pv[1].length; ply++ )
+		  {
+		   pdata->buf[ pos_buf++ ] = Move2S(ptree->pv[1].a[ply]);
+		  }
+		pdata->buf[ pos_buf - 1 ] |= 0x8000U;
       }
   }
 

@@ -1,15 +1,16 @@
-﻿#include "shogi.h"
-#ifndef BITOP_H
+﻿#ifndef BITOP_H
 #define BITOP_H
+#include "shogi.h"
 
 #if defined(_WIN32)
-
-#  define CONV              __fastcall
-
+#  define CONV2              __fastcall
 #else
-
-#  define CONV
-
+#  define CONV2
+#endif
+#if defined(_MSC_VER)
+#  define Inline              __inline
+#else
+#  define Inline			  inline			　
 #endif
 
 #define BBToU(b)            ( (b).p[0] | (b).p[1] | (b).p[2] )
@@ -17,30 +18,31 @@
 #define PopuCount(bb)       popu_count012( bb.p[0], bb.p[1], bb.p[2] )
 #define FirstOne(bb)        first_one012( bb.p[0], bb.p[1], bb.p[2] )
 
+#if defined(_MSC_VER)
 /* 順序無くbit取り出しの高速化*/
 #define foreach_bitboard_one(bb,sq,XXX) \
 {\
 /**/ if (bb.p[0]|bb.p[1]|bb.p[2]) /**/ \
   {\
 		unsigned long _index_; \
-					while ( _BitScanForward( &_index_, bb.p[0] ) ) \
-								{ \
+		while ( _BitScanForward( &_index_, bb.p[0] ) ) \
+		{ \
 				bb.p[0] &= bb.p[0] - 1 ; \
 				sq = 26 - _index_; \
 				XXX; \
-								} \
-											while ( _BitScanForward( &_index_, bb.p[1] ) ) \
-														{ \
+		} \
+		while ( _BitScanForward( &_index_, bb.p[1] ) ) \
+		{ \
 				bb.p[1] &= bb.p[1] - 1; \
 				sq = 53 - _index_; \
 				XXX; \
-														} \
-																	while( _BitScanForward( &_index_, bb.p[2] ) ) \
-																				{ \
+		} \
+		while( _BitScanForward( &_index_, bb.p[2] ) ) \
+		{ \
 				bb.p[2] &= bb.p[2] - 1; \
 				sq = 80 - _index_; \
 				XXX; \
-																				} \
+		} \
   }\
 }
 
@@ -49,24 +51,24 @@
 {\
     { \
 		unsigned long _index_; \
-					while ( _BitScanForward( &_index_, bb.p[0] ) ) \
-								{ \
-				bb.p[0] &= bb.p[0] - 1 ; \
-				sq = 26 - _index_; \
-				XXX; \
-								} \
-											while ( _BitScanForward( &_index_, bb.p[1] ) ) \
-														{ \
+		while ( _BitScanForward( &_index_, bb.p[0] ) ) \
+		{ \
+			bb.p[0] &= bb.p[0] - 1 ; \
+			sq = 26 - _index_; \
+			XXX; \
+		} \
+		while ( _BitScanForward( &_index_, bb.p[1] ) ) \
+		{ \
 				bb.p[1] &= bb.p[1] - 1; \
 				sq = 53 - _index_; \
 				XXX; \
-														} \
-																	while( _BitScanForward( &_index_, bb.p[2] ) ) \
-																				{ \
+		} \
+		while( _BitScanForward( &_index_, bb.p[2] ) ) \
+		{ \
 				bb.p[2] &= bb.p[2] - 1; \
 				sq = 80 - _index_; \
 				XXX; \
-																				} \
+		} \
     } \
 }
 /*firstone高速化*/
@@ -174,6 +176,151 @@
 						} \
 	    } \
 }
+#else
+/*if (u0) { return __builtin_clz(bb.p[0]) - 5; }
+	if (u1) { return __builtin_clz(bb.p[1]) + 22; }
+	return __builtin_clz(bb.p[2]) + 49;
+	*/
+
+/* 順序無くbit取り出しの高速化*/
+#define foreach_bitboard_one(bb,sq,XXX) \
+{\
+/**/ if (bb.p[0]|bb.p[1]|bb.p[2]) /**/ \
+  {\
+  		while( bb.p[0])\
+			{\
+		sq = __builtin_ctz(bb.p[0]) - 5 ;\
+		bb.p[0] &= bb.p[0] - 1 ; \
+		XXX; \
+			}\
+		while( bb.p[1])\
+	{\
+		sq = __builtin_ctz(bb.p[1]) + 22 ;\
+		bb.p[1] &= bb.p[1] - 1 ; \
+		XXX; \
+	}\
+		while( bb.p[2])\
+	{\
+		sq = __builtin_ctz(bb.p[2]) + 49 ;\
+		bb.p[2] &= bb.p[2] - 1 ; \
+		XXX; \
+	}\
+}
+
+/* 順序無くbit取り出しの高速化　ビットボードのチェックなし*/
+#define foreach_bitboard_one_no_check(bb,sq,XXX) \
+{\
+		    while( bb.p[0])\
+						{\
+		sq = __builtin_ctz(bb.p[0]) - 5 ;\
+		bb.p[0] &= bb.p[0] - 1 ; \
+		XXX; \
+						}\
+								while( bb.p[1])\
+									{\
+		sq = __builtin_ctz(bb.p[1]) + 22 ;\
+		bb.p[1] &= bb.p[1] - 1 ; \
+		XXX; \
+									}\
+											while( bb.p[2])\
+												{\
+		sq = __builtin_ctz(bb.p[2]) + 49 ;\
+		bb.p[2] &= bb.p[2] - 1 ; \
+		XXX; \
+												}\
+}
+/*firstone高速化*/
+#define foreach_bitboard_firstone(bb,sq,XXX) \
+{\
+		while( bb.p[0])\
+		{\
+	sq = __builtin_clz(bb.p[0]) - 5 ;\
+	bb.p[0] ^= 1 << ( 31 - sq ) ; \
+	XXX; \
+		}\
+		while( bb.p[1])\
+		{\
+	sq = __builtin_clz(bb.p[1]) + 22 ;\
+	bb.p[1] = 1 << ( 31 - sq ) ; \
+	XXX; \
+		}\
+		while( bb.p[2])\
+		{\
+	sq = __builtin_clz(bb.p[2]) + 49 ;\
+	bb.p[2] = 1 << ( 31 - sq ) ; \
+	XXX; \
+		}\
+}
+
+/*firstone高速化　ビットボードチェックなし*/
+#define foreach_bitboard_firstone_no_check(bb,sq,XXX) \
+{\
+		while( bb.p[0])\
+		{\
+	sq = __builtin_clz(bb.p[0]) - 5 ;\
+	bb.p[0] ^= 1 << ( 31 - sq ) ; \
+	XXX; \
+		}\
+		while( bb.p[1])\
+		{\
+	sq = __builtin_clz(bb.p[1]) + 22 ;\
+	bb.p[1] = 1 << ( 31 - sq ) ; \
+	XXX; \
+		}\
+		while( bb.p[2])\
+		{\
+	sq = __builtin_clz(bb.p[2]) + 49 ;\
+	bb.p[2] = 1 << ( 31 - sq ) ; \
+	XXX; \
+		}\
+}
+
+/*lastone 高速化*/
+#define foreach_bitboard_lastone(bb,sq,XXX) \
+{\
+	while( bb.p[2])\
+	{\
+		sq = __builtin_clz(bb.p[2]) + 49 ;\
+		bb.p[2] &= bb.p[2] - 1 ; \
+		XXX; \
+	}\
+	while( bb.p[1])\
+	{\
+		sq = __builtin_clz(bb.p[1]) + 22 ;\
+		bb.p[1] &= bb.p[1] - 1 ; \
+		XXX; \
+	}\
+	while( bb.p[0])\
+	{\
+		sq = __builtin_clz(bb.p[0]) - 5 ;\
+		bb.p[0] &= bb.p[0] - 1 ; \
+		XXX; \
+	}\
+}
+
+/* lastone 高速化　ビットボードのチェックなし*/
+#define foreach_bitboard_lastone_no_check(bb,sq,XXX) \
+{\
+			while( bb.p[2])\
+				{\
+		sq = __builtin_ctz(bb.p[2]) + 49 ;\
+		bb.p[2] &= bb.p[2] - 1 ; \
+		XXX; \
+				}\
+					while( bb.p[1])\
+						{\
+		sq = __builtin_ctz(bb.p[1]) + 22 ;\
+		bb.p[1] &= bb.p[1] - 1 ; \
+		XXX; \
+						}\
+							while( bb.p[0])\
+								{\
+		sq = __builtin_ctz(bb.p[0]) - 5 ;\
+		bb.p[0] &= bb.p[0] - 1 ; \
+		XXX; \
+								}\
+}
+#endif
 
 #define LastOne(bb)         last_one210( bb.p[2], bb.p[1], bb.p[0] )
 #define BBCmp(b1,b2)        ( (b1).p[0] != (b2).p[0]                    \
@@ -293,9 +440,7 @@ typedef struct { unsigned int p[3]; } bitboard_t;
 
 #endif /* HAVE_SSE2 */
 
-#endif /* BITOP_H */
-
-__inline int CONV
+Inline int CONV2
 popu_count012(unsigned int u0, unsigned int u1, unsigned int u2)
 {
 	int counter = 0;
@@ -315,7 +460,7 @@ popu_count012(unsigned int u0, unsigned int u1, unsigned int u2)
 
 #if defined(_MSC_VER)
 
-__inline int CONV
+Inline int CONV2
 first_one012(unsigned int u0, unsigned int u1, unsigned int u2)
 {
 	unsigned long index;
@@ -326,7 +471,7 @@ first_one012(unsigned int u0, unsigned int u1, unsigned int u2)
 	return 80 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 last_one210(unsigned int u2, unsigned int u1, unsigned int u0)
 {
 	unsigned long index;
@@ -337,7 +482,7 @@ last_one210(unsigned int u2, unsigned int u1, unsigned int u0)
 	return 26 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 first_one01(unsigned int u0, unsigned int u1)
 {
 	unsigned long index;
@@ -347,7 +492,7 @@ first_one01(unsigned int u0, unsigned int u1)
 	return 53 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 first_one12(unsigned int u1, unsigned int u2)
 {
 	unsigned long index;
@@ -357,7 +502,7 @@ first_one12(unsigned int u1, unsigned int u2)
 	return 80 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 last_one01(unsigned int u0, unsigned int u1)
 {
 	unsigned long index;
@@ -367,7 +512,7 @@ last_one01(unsigned int u0, unsigned int u1)
 	return 26 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 last_one12(unsigned int u1, unsigned u2)
 {
 	unsigned long index;
@@ -377,7 +522,7 @@ last_one12(unsigned int u1, unsigned u2)
 	return 53 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 first_one1(unsigned int u1)
 {
 	unsigned long index;
@@ -386,7 +531,7 @@ first_one1(unsigned int u1)
 	return 53 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 first_one2(unsigned int u2)
 {
 	unsigned long index;
@@ -395,7 +540,7 @@ first_one2(unsigned int u2)
 	return 80 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 last_one0(unsigned int u0)
 {
 	unsigned long index;
@@ -404,7 +549,7 @@ last_one0(unsigned int u0)
 	return 26 - index;
 }
 
-__inline int CONV
+Inline int CONV2
 last_one1(unsigned int u1)
 {
 	unsigned long index;
@@ -604,3 +749,5 @@ last_one1(unsigned int u1)
 }
 
 #endif
+
+#endif /* BITOP_H */
