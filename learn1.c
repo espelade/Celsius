@@ -369,7 +369,6 @@ static void *parse1_worker( void *arg )
 	//棋譜の長さまで順に棋譜の指し手について何かの計算をしている
     for ( imove = 0; imove < (int)pdata->record_length; imove++ )
       {
-		//この辺りで負けた方の指し手を適当に読み飛ばすようにしたい
 		
 		//ここでrecord_movesを更新している
 		record_move                    = pdata->record_moves[imove];
@@ -377,22 +376,22 @@ static void *parse1_worker( void *arg )
 		pdata->buf[ pdata->pos_buf++ ] = Move2S(record_move);
 
 		//この二行を読み飛ばせばいいのかねぇ
-		if (pdata->winner == 0 ){
+		//if (pdata->winner == 0 ){
 			//先手勝利時、先手の手のみ計算
-			if ( (imove % 2) == 0){
+		//	if ( (imove % 2) == 0){
 				if ( record_move & MOVE_VOID ) { record_move &= ~MOVE_VOID; }
 				else                           { make_pv( pdata, record_move ); }
-			}
-			else{}
-		}
-		else{
-			if ( (imove % 2) == 1){
+		//	}
+		//	else{}
+		//}
+		//else{
+		//	if ( (imove % 2) == 1){
 				//後手勝利時、後手の手のみ計算
 				if (record_move & MOVE_VOID) { record_move &= ~MOVE_VOID; }
 				else                         { make_pv(pdata, record_move); }
-			}
-			else{}
-		}
+		//	}
+		//	else{}
+		//}
 		pdata->buf[ pdata->pos_buf++ ] = 0;
 
 		MakeMove( pdata->root_turn, record_move, 1 );//メイクムーブしておるな
@@ -454,6 +453,7 @@ static void *parse1_worker( void *arg )
 //見えた～！！ここで学習の処理しておる！！
 /*ここで勝者の手のみmake_pv及びsave_pvするようにすればよかろう！*/
 /*とすれば勝者を判定せねばならんな。それはつまり最後の手を指したものだの。*/
+//この辺りで負けた方の指し手を適当に読み飛ばすようにしたい
 static void
 make_pv( parse1_data_t *pdata, unsigned int record_move )
 {

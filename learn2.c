@@ -5,6 +5,8 @@
 #include <assert.h>
 #include "shogi.h"
 
+#define NLIST 52
+
 #if ! defined(MINIMUM)
 
 #define GO_THROUGH_ALL_PARAMETERS_BY_FOO                                  \
@@ -16,8 +18,8 @@ static void rmt( const double avalue[16], int pc );
 static void rparam( short *pv, float dv );
 static void fv_sym( void );
 static int brand( void );
-static int make_list( const tree_t * restrict ptree, int list0[52],
-		      int list1[52], int anpiece[16], param_t * restrict pd,
+static int make_list( const tree_t * restrict ptree, int list0[NLIST],
+		      int list1[NLIST], int anpiece[16], param_t * restrict pd,
 		      float f );
 
 
@@ -408,7 +410,7 @@ void
 inc_param( const tree_t * restrict ptree, param_t * restrict pd, double dinc )
 {
   float f;
-  int anpiece[16], list0[52], list1[52];
+  int anpiece[16], list0[NLIST], list1[NLIST];
   int nlist, sq_bk, sq_wk, k0, k1, l0, l1, i, j;
 
   f     = (float)( dinc / (double)FV_SCALE );
@@ -431,23 +433,23 @@ inc_param( const tree_t * restrict ptree, param_t * restrict pd, double dinc )
   pd->dragon     += dinc * (double)anpiece[dragon];
 
   for ( i = 0; i < nlist; i++ )
-    {
+  {
       k0 = list0[i];
       k1 = list1[i];
       for ( j = 0; j <= i; j++ )
-	{
-	  l0 = list0[j];
-	  l1 = list1[j];
-	  assert( k0 >= l0 && k1 >= l1 );
-	  pd->PcPcOnSq( sq_bk, k0, l0 ) += f;
-	  pd->PcPcOnSq( sq_wk, k1, l1 ) -= f;
-	}
-    }
+	  {
+		  l0 = list0[j];
+		  l1 = list1[j];
+		  assert( k0 >= l0 && k1 >= l1 );
+		  pd->PcPcOnSq( sq_bk, k0, l0 ) += f;
+		  pd->PcPcOnSq( sq_wk, k1, l1 ) -= f;
+	  }
+  }
 }
 
 
 static int
-make_list( const tree_t * restrict ptree, int list0[52], int list1[52],
+make_list( const tree_t * restrict ptree, int list0[NLIST], int list1[NLIST],
 	   int anpiece[16], param_t * restrict pd, float f )
 {
   bitboard_t bb;
@@ -699,7 +701,7 @@ make_list( const tree_t * restrict ptree, int list0[52], int list1[52],
 
   n2 = 0;
   bb = BB_BHORSE;
-  wforeach_bitboard_one(bb, sq,
+  foreach_bitboard_one(bb, sq,
   {
 	  list0[nlist] = f_horse + sq;
 	  list2[n2] = e_horse + Inv(sq);
@@ -765,7 +767,7 @@ make_list( const tree_t * restrict ptree, int list0[52], int list1[52],
   );
   for ( i = 0; i < n2; i++ ) { list1[nlist-i-1] = list2[i]; }
 
-  assert( nlist <= 52 );
+  assert( nlist <= NLIST );
   return nlist;
 }
 
@@ -788,18 +790,40 @@ rmt( const double avalue[16], int pc )
 static void
 rparam( short *pv, float dv )
 {
-  int v, istep;
+  int v, r,istep;
 
-  istep  = brand();
-  istep += brand();
+  istep  = brand() + brand();//0,1,2
+  r = brand() + brand() - 1;//-1,0,1
   v      = *pv;
+  //0‚ðdv‚É‚µ‚Ä‚Ý‚é‚©
+  if      (v > dv) { dv -= (float)FV_PENALTY; }
+  else if (v < dv) { dv += (float)FV_PENALTY; }
 
-  if      ( v > 0 ) { dv -= (float)FV_PENALTY; }
-  else if ( v < 0 ) { dv += (float)FV_PENALTY; }
+  if (dv == 0.0) {
+	  if (r > 0)  {
+		  if (v <= SHRT_MAX - r) { v += r; }
+		  else {
+		  warn:
+			  out_warning("A fvcoef parameter is out of bounce.\n");
+		  }
+	  }
+	  else if (r < 0) {
+		  if (v >= SHRT_MIN - r) { v += r; }
+		  else{ goto warn; }
+	  }
+	  else{}
+  }
+  else {
+	  if (dv > 0.0) {
+		  if (v <= SHRT_MAX - istep) { v += istep; }
+		  else{ goto warn; }
+	  }
+	  else {//dv < 0.0‚Ìê‡
+		  if (v >= SHRT_MIN + istep) { v -= istep; }
+		  else{ goto warn; }
+	  }
+  }
 
-  if      ( dv >= 0.0 && v <= SHRT_MAX - istep ) { v += istep; }
-  else if ( dv <= 0.0 && v >= SHRT_MIN + istep ) { v -= istep; }
-  else { out_warning( "A fvcoef parameter is out of bounce.\n" ); }
 
   *pv = (short)v;
 }
