@@ -547,11 +547,12 @@ stdout_normal( void )
     }
 
   wAttributes = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-  /*if ( ! SetConsoleTextAttribute( hStdout, wAttributes ) )
+  if ( ! SetConsoleTextAttribute( hStdout, wAttributes ) )
     {
       str_error = "SetConsoleTextAttribute() faild";
       return -1;
-    }*/
+    }
+
 #  else
   printf( "\033[0m" );
 #  endif
@@ -585,11 +586,11 @@ stdout_stress( int is_promote, int ifrom )
     wAttributes = ( BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
 		    | BACKGROUND_INTENSITY );
   }
-  /*if ( ! SetConsoleTextAttribute( hStdout, wAttributes ) )
+  if ( ! SetConsoleTextAttribute( hStdout, wAttributes ) )
     {
       str_error = "SetConsoleTextAttribute() faild";
       return -1;
-    }*/
+    }
 #  else
   if      ( is_promote )       { printf( "\033[7;31m" ); }
   else if ( ifrom >= nsquare ) { printf( "\033[7;34m" ); }

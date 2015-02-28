@@ -1,15 +1,15 @@
-#define DPawn           100 /*  200 */
-#define DLance          250 /*  500 */
-#define DKnight         300 /*  600 */
-#define DSilver         350 /*  700 */
-#define DProPawn        500 /*  600 */
-#define DProLance       490 /*  740 */
-#define DProKnight      480 /*  780 */
-#define DProSilver      470 /*  820 */
-#define DGold           460 /*  920 */
-#define DBishop         600 /* 1200 */
-#define DRook           700 /* 1400 */
-#define DHorse          800 /* 1400 */
-#define DDragon         900 /* 1600 */
+#define DPawn            87 /*  174 */
+#define DLance          232 /*  464 */
+#define DKnight         257 /*  514 */
+#define DProPawn        534 /*  621 */
+#define DProLance       489 /*  721 */
+#define DSilver         369 /*  738 */
+#define DProKnight      510 /*  767 */
+#define DProSilver      495 /*  864 */
+#define DGold           444 /*  888 */
+#define DBishop         569 /* 1138 */
+#define DRook           642 /* 1284 */
+#define DHorse          827 /* 1396 */
+#define DDragon         945 /* 1587 */
 #define DKing         15000
 
